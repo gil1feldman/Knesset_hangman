@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>מי אני הח"כ?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #1a237e;
+  --navy2:   #1e2d7d;
+  --cyan:    #00bcd4;
+  --lime:    #c6d92f;
+  --pink:    #f0436a;
+  --gold:    #f59e0b;
+  --bg:      #0d1240;
+  --surface: rgba(26,35,126,0.6);
+  --muted:   #8e9be0;
+  --text:    #ffffff;
+  --shadow-neon: 0 0 20px rgba(0,188,212,0.4);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100dvh;
+  background: radial-gradient(circle at top, #1e2d7d 0%, #0d1240 80%);
+  font-family: 'Heebo', Arial, sans-serif;
+  direction: rtl;
+  color: var(--text);
+  overflow-x: hidden;
+  user-select: none;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,188,212,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,188,212,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+#app { position: relative; z-index: 1; min-height: 100dvh; display: flex; flex-direction: column; }
+
+/* SCREENS */
+.screen { display: none; flex: 1; }
+.screen.active { display: flex; flex-direction: column; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── LOADING ─── */
+#screen-loading { align-items:center; justify-content:center; gap:20px; }
+.load-bars { display:flex; align-items:flex-end; gap:5px; height:48px; }
+.load-bars span { border-radius:3px 3px 0 0; width:12px; animation:barPulse 1.2s ease-in-out infinite; }
+.load-bars span:nth-child(1) { height:48px; background:var(--cyan); animation-delay:0s; box-shadow:0 0 12px var(--cyan); }
+.load-bars span:nth-child(2) { height:36px; background:var(--lime); animation-delay:0.15s; box-shadow:0 0 12px var(--lime); }
+.load-bars span:nth-child(3) { height:24px; background:var(--pink); animation-delay:0.3s; box-shadow:0 0 12px var(--pink); }
+@keyframes barPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0.5;transform:scaleY(0.7)} }
+.load-title { font-size:32px; font-weight:900; text-shadow:0 0 15px rgba(0,188,212,0.6); }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner { width:44px;height:44px;border:4px solid rgba(255,255,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:var(--shadow-neon); }
+#load-msg { color:var(--muted); font-size:14px; font-weight:500; }
+
+/* ─── ERROR ─── */
+#screen-error { align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center; }
+.error-box { color:#ff8a80;font-size:13px;max-width:340px;line-height:1.7;background:rgba(240,67,106,0.12);border:1px solid rgba(240,67,106,0.35);border-radius:10px;padding:12px 16px; }
+
+/* ─── HOME ─── */
+#screen-home { align-items:center; justify-content:center; padding:24px; gap:0; }
+.home-inner { width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:0; }
+
+.game-logo { text-align:center; margin-bottom:28px; animation:fadeUp 0.6s ease; }
+.game-logo-emoji { font-size:56px; display:block; margin-bottom:6px; filter:drop-shadow(0 0 20px rgba(0,188,212,0.6)); }
+.game-logo h1 { font-size:clamp(26px,7vw,38px); font-weight:900; letter-spacing:-0.5px; line-height:1.1; }
+.game-logo h1 span.cyan { color:var(--cyan); }
+.game-logo h1 span.lime { color:var(--lime); }
+.game-logo .tagline { color:var(--muted); font-size:14px; font-weight:600; margin-top:6px; letter-spacing:0.5px; }
+
+.accent-bar { display:flex; gap:6px; justify-content:center; margin:14px 0 22px; }
+.accent-bar span { height:5px; border-radius:5px; }
+.accent-bar span:nth-child(1) { width:44px; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+.accent-bar span:nth-child(2) { width:22px; background:var(--lime); box-shadow:0 0 8px var(--lime); }
+.accent-bar span:nth-child(3) { width:11px; background:var(--pink); box-shadow:0 0 8px var(--pink); }
+
+.diff-section { width:100%; margin-bottom:18px; animation:fadeUp 0.6s 0.1s ease both; }
+.diff-label { font-size:11px; letter-spacing:2px; font-weight:700; color:var(--muted); text-transform:uppercase; text-align:center; margin-bottom:10px; }
+.diff-row { display:flex; gap:8px; }
+.diff-btn {
+  flex:1; padding:12px 8px; border-radius:12px;
+  border:2px solid rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.2);
+  color:var(--muted); font-size:13px; font-weight:800;
+  cursor:pointer; transition:all 0.2s; font-family:inherit;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.diff-btn .diff-icon { font-size:20px; }
+.diff-btn .diff-lives { font-size:10px; font-weight:600; opacity:0.7; }
+.diff-btn.easy.active   { background:rgba(198,217,47,0.15); border-color:var(--lime); color:var(--lime); box-shadow:0 0 12px rgba(198,217,47,0.3); }
+.diff-btn.medium.active { background:rgba(0,188,212,0.15);  border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 12px rgba(0,188,212,0.3); }
+.diff-btn.hard.active   { background:rgba(240,67,106,0.15); border-color:var(--pink); color:var(--pink); box-shadow:0 0 12px rgba(240,67,106,0.3); }
+
+.home-actions { width:100%; display:flex; flex-direction:column; gap:10px; animation:fadeUp 0.6s 0.2s ease both; }
+.btn-start {
+  width:100%; padding:16px; border-radius:14px; border:none;
+  background:var(--cyan); color:var(--navy);
+  font-size:18px; font-weight:900; cursor:pointer; font-family:inherit;
+  box-shadow:0 6px 0 #008ba3, 0 10px 20px rgba(0,188,212,0.35);
+  transition:all 0.1s; position:relative; top:0;
+}
+.btn-start:active { top:6px; box-shadow:0 0 0 transparent; }
+.btn-start:hover  { filter:brightness(1.08); }
+.btn-howto { background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.2); color:var(--muted); border-radius:12px; padding:11px; cursor:pointer; font-size:14px; font-weight:700; font-family:inherit; transition:all 0.2s; }
+.btn-howto:hover { background:rgba(255,255,255,0.13); color:var(--text); }
+
+.credit { color:var(--muted); font-size:11px; margin-top:18px; opacity:0.7; }
+
+/* ─── PLAY ─── */
+#screen-play { padding:0; overflow:hidden; }
+.play-wrap {
+  width:100%; max-width:500px; margin:0 auto;
+  padding:12px 14px 8px;
+  display:flex; flex-direction:column; height:100dvh; overflow:hidden; gap:8px;
+}
+
+/* Header */
+.play-header { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.btn-back { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); color:var(--text); border-radius:10px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:700; font-family:inherit; transition:all 0.2s; }
+.btn-back:hover { background:var(--cyan); color:var(--navy); border-color:var(--cyan); }
+.header-info { flex:1; min-width:0; }
+.header-sub { font-size:9px; letter-spacing:3px; font-weight:700; color:var(--cyan); text-transform:uppercase; }
+.header-title { font-size:clamp(11px,2.5vw,14px); font-weight:800; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Vote context box */
+.vote-ctx {
+  flex-shrink:0;
+  background:rgba(0,0,0,0.35); border:1.5px solid rgba(0,188,212,0.25);
+  border-radius:14px; padding:10px 14px;
+}
+.vote-ctx-sentence { font-size:14px; font-weight:700; line-height:1.6; display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.vote-badge {
+  font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; flex-shrink:0;
+  white-space:nowrap;
+}
+.vote-badge.for     { background:rgba(22,163,74,0.2);  color:#4ade80;  border:1px solid rgba(22,163,74,0.4); }
+.vote-badge.against { background:rgba(240,67,106,0.2); color:#fb7185; border:1px solid rgba(240,67,106,0.4); }
+.vote-ctx-name { font-size:14px; font-weight:700; color:var(--text); }
+
+/* Gallows */
+/* ── VOTE ANIMATION ── */
+.vote-scene {
+  flex-shrink:0; display:flex; justify-content:center; align-items:center;
+  height:120px; position:relative; overflow:hidden;
+}
+.vote-stage {
+  position:relative; width:260px; height:110px;
+}
+/* Ground line */
+.vm-ground {
+  position:absolute; bottom:0; left:0; right:0;
+  height:2px; background:rgba(0,188,212,0.2); border-radius:2px;
+}
+/* The ballot box / knesset voting machine */
+.vm-box {
+  position:absolute; bottom:2px; right:16px;
+  width:62px; height:70px; border-radius:6px 6px 4px 4px;
+  background:linear-gradient(160deg,rgba(30,45,125,0.95),rgba(13,18,64,0.95));
+  border:2px solid var(--cyan);
+  box-shadow:0 0 18px rgba(0,188,212,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  padding-top:10px; gap:5px; overflow:hidden;
+}
+.vm-screen {
+  width:42px; height:22px; border-radius:3px;
+  background:rgba(0,0,0,0.5); border:1px solid rgba(0,188,212,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:7px; font-weight:800; color:var(--cyan); letter-spacing:0.5px;
+}
+.vm-buttons {
+  display:flex; gap:5px;
+}
+.vm-btn-for {
+  width:14px; height:10px; border-radius:2px;
+  background:rgba(22,163,74,0.7); border:1px solid #4ade80;
+  box-shadow:0 0 5px rgba(22,163,74,0.5);
+}
+.vm-btn-against {
+  width:14px; height:10px; border-radius:2px;
+  background:rgba(240,67,106,0.7); border:1px solid var(--pink);
+  box-shadow:0 0 5px rgba(240,67,106,0.5);
+}
+/* Danger fill rising from bottom */
+.vm-fill {
+  position:absolute; bottom:0; left:0; right:0;
+  height:0%;
+  background:linear-gradient(0deg,rgba(240,67,106,0.5),rgba(240,67,106,0.1));
+  transition:height 0.5s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+/* Walking MK - SVG container */
+.vm-mk {
+  position:absolute; bottom:2px;
+  left:4px;
+  transition:left 0.55s cubic-bezier(0.4,0,0.2,1);
+  width:32px; height:70px;
+}
+/* Walking animation for legs */
+@keyframes legSwingL { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(10deg)} }
+@keyframes legSwingR { 0%,100%{transform:rotate(10deg)}  50%{transform:rotate(-18deg)} }
+@keyframes armSwingL { 0%,100%{transform:rotate(14deg)}  50%{transform:rotate(-10deg)} }
+@keyframes armSwingR { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(14deg)} }
+@keyframes bodyBob   { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-2px)} }
+.mk-walking .mk-body-grp { animation:bodyBob 0.5s ease-in-out infinite; }
+.mk-walking .mk-leg-l    { animation:legSwingL 0.5s ease-in-out infinite; transform-origin:8px 0; }
+.mk-walking .mk-leg-r    { animation:legSwingR 0.5s ease-in-out infinite; transform-origin:8px 0; }
+.mk-walking .mk-arm-l    { animation:armSwingL 0.5s ease-in-out infinite; transform-origin:4px 2px; }
+.mk-walking .mk-arm-r    { animation:armSwingR 0.5s ease-in-out infinite; transform-origin:10px 2px; }
+.mk-idle .mk-leg-l,.mk-idle .mk-leg-r { animation:none; transform:rotate(0deg); }
+.mk-idle .mk-arm-l,.mk-idle .mk-arm-r { animation:none; transform:rotate(0deg); }
+
+/* ballot slip flying */
+.vm-ballot-fly {
+  position:absolute; width:12px; height:9px; border-radius:1px;
+  background:#fff; border:1px solid rgba(0,188,212,0.6);
+  opacity:0; pointer-events:none;
+}
+.vm-ballot-fly.go {
+  animation:slipFly 0.55s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes slipFly {
+  0%   { opacity:1; transform:translate(0,0) rotate(0deg); }
+  60%  { opacity:1; }
+  100% { opacity:0; transform:translate(42px,-18px) rotate(-20deg); }
+}
+
+/* Lives + streak */
+.meta-row { display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:8px; }
+.lives-wrap { display:flex; gap:3px; align-items:center; }
+.life-dot { font-size:14px; transition:all 0.3s; }
+.life-dot.lost { filter:grayscale(1) opacity(0.2); transform:scale(0.7) rotate(-30deg); }
+.lives-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-left:5px; }
+
+/* Name display */
+.name-display {
+  flex-shrink:0;
+  display:flex; flex-wrap:wrap; gap:5px; justify-content:center; align-items:center;
+  padding:10px 8px;
+  background:rgba(0,0,0,0.25); border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+  min-height:52px;
+}
+.letter-slot {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.letter-char {
+  font-size:clamp(18px,5vw,26px); font-weight:900; min-width:22px; text-align:center; line-height:1;
+  color:var(--text); text-shadow:0 0 8px rgba(0,188,212,0.5);
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  opacity:0; transform:scale(0.5);
+}
+.letter-char.revealed { opacity:1; transform:scale(1); }
+.letter-char.space { opacity:1; transform:scale(1); }
+.letter-line { width:22px; height:2px; background:rgba(255,255,255,0.25); border-radius:2px; }
+.letter-line.revealed { background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
+
+/* Keyboard */
+.keyboard { flex-shrink:0; display:flex; flex-direction:column; gap:5px; }
+.kb-row { display:flex; gap:4px; justify-content:center; }
+.kb-btn {
+  font-size:clamp(13px,3.5vw,17px); font-weight:800;
+  width:clamp(30px,8.5vw,42px); height:clamp(34px,9vw,46px);
+  border:none; border-radius:8px;
+  background:rgba(26,35,126,0.7); color:var(--text);
+  cursor:pointer; font-family:inherit; transition:all 0.12s;
+  border:1.5px solid rgba(255,255,255,0.1);
+  position:relative; top:0;
+  box-shadow:0 3px 0 rgba(0,0,0,0.4);
+}
+.kb-btn:active:not(:disabled) { top:3px; box-shadow:0 0 0 transparent; }
+.kb-btn:hover:not(:disabled) { background:rgba(0,188,212,0.25); border-color:var(--cyan); }
+.kb-btn:disabled { opacity:0.22; cursor:not-allowed; transform:none; }
+.kb-btn.hit  { background:rgba(22,163,74,0.3); border-color:#4ade80; color:#4ade80; }
+.kb-btn.miss { background:rgba(240,67,106,0.2); border-color:rgba(240,67,106,0.4); color:rgba(240,67,106,0.6); }
+
+/* Faction hint */
+.hint-row { flex-shrink:0; text-align:center; }
+.faction-hint { display:inline-block; font-size:12px; font-weight:600; color:var(--muted); background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:3px 14px; }
+
+/* Result overlay */
+.result-overlay {
+  position:fixed; inset:0; z-index:50; background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center;
+  padding:20px; animation:fadeIn 0.25s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.result-box {
+  background:var(--navy); border-radius:22px;
+  max-width:400px; width:100%; padding:24px 20px;
+  text-align:center; position:relative; overflow:hidden;
+  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+.result-box::before {
+  content:''; position:absolute; inset:0;
+  border-radius:22px; pointer-events:none;
+  border:2.5px solid var(--border-color, var(--cyan));
+  box-shadow:inset 0 0 20px rgba(0,188,212,0.1), 0 0 30px rgba(0,188,212,0.2);
+}
+.result-emoji { font-size:54px; display:block; margin-bottom:6px; }
+.result-title { font-size:26px; font-weight:900; margin-bottom:4px; }
+.result-name  { font-size:20px; font-weight:700; color:var(--cyan); margin-bottom:12px; }
+.result-vote-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:16px; font-size:13px; color:var(--muted); }
+.result-stats { display:flex; gap:16px; justify-content:center; margin-bottom:18px; }
+.rstat { text-align:center; }
+.rstat-val { font-size:22px; font-weight:900; font-family:monospace; }
+.rstat-lbl { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
+
+/* Full results */
+.full-results { max-height:160px; overflow-y:auto; margin-bottom:16px; display:flex; flex-direction:column; gap:4px; padding-right:4px; }
+.full-results::-webkit-scrollbar { width:4px; }
+.full-results::-webkit-scrollbar-track { background:rgba(255,255,255,0.05); border-radius:2px; }
+.full-results::-webkit-scrollbar-thumb { background:rgba(0,188,212,0.4); border-radius:2px; }
+.fr-row { display:flex; align-items:center; justify-content:space-between; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.04); font-size:12px; }
+.fr-row.for     { border-right:3px solid #4ade80; }
+.fr-row.against { border-right:3px solid var(--pink); }
+.fr-row.abstain { border-right:3px solid var(--gold); }
+.fr-name { font-weight:700; }
+.fr-faction { color:var(--muted); font-size:11px; }
+.fr-vote { font-size:11px; font-weight:700; }
+.fr-vote.for     { color:#4ade80; }
+.fr-vote.against { color:var(--pink); }
+.fr-vote.abstain { color:var(--gold); }
+
+.result-actions { display:flex; gap:10px; }
+.btn-next { flex:1; padding:13px; border-radius:12px; border:none; background:var(--cyan); color:var(--navy); font-size:15px; font-weight:900; cursor:pointer; font-family:inherit; box-shadow:0 5px 0 #008ba3; transition:all 0.1s; position:relative; top:0; }
+.btn-next:active { top:5px; box-shadow:0 0 0 transparent; }
+.btn-home { padding:13px 18px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.2); background:transparent; color:var(--muted); font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+
+/* Flash */
+.flash { position:fixed; inset:0; pointer-events:none; z-index:40; opacity:0; transition:opacity 0.15s; }
+.flash.green { background:rgba(22,163,74,0.15); }
+.flash.red   { background:rgba(240,67,106,0.15); }
+
+/* Modal instructions */
+.modal-overlay { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s; }
+.modal-box { background:var(--navy); border:2.5px solid var(--cyan); border-radius:20px; padding:24px; max-width:400px; width:100%; box-shadow:0 0 30px rgba(0,188,212,0.3); animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.modal-title { color:var(--lime); font-size:19px; font-weight:900; margin-bottom:16px; text-align:center; }
+.modal-steps { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.modal-step { display:flex; gap:12px; align-items:flex-start; background:rgba(255,255,255,0.05); border-radius:10px; padding:9px 12px; }
+.modal-step-icon { font-size:20px; flex-shrink:0; }
+.modal-step-text { font-size:13px; line-height:1.6; color:rgba(255,255,255,0.85); }
+.modal-step-text strong { color:var(--cyan); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- LOADING -->
+<div id="screen-loading" class="screen active">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:18px;padding:24px;text-align:center;">
+    <div class="load-bars"><span></span><span></span><span></span></div>
+    <div class="load-title">מי אני הח"כ?</div>
+    <div class="spinner"></div>
+    <div id="load-msg" style="color:var(--muted);font-size:14px">טוען נתונים...</div>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div id="screen-error" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:24px;text-align:center;">
+    <div style="font-size:52px;filter:drop-shadow(0 0 10px rgba(240,67,106,0.8))">⚠️</div>
+    <div style="color:var(--pink);font-size:22px;font-weight:900">שגיאה בטעינה</div>
+    <div id="error-msg" class="error-box"></div>
+    <button class="btn-start" style="width:200px" onclick="loadGames(true)">🔄 נסה שוב</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen">
+  <div style="display:flex;align-items:center;justify-content:center;flex:1;padding:20px;">
+    <div class="home-inner">
+      <div class="game-logo">
+        <span class="game-logo-emoji">🏛️</span>
+        <h1><span class="cyan">מי אני</span> <span class="lime">הח"כ?</span></h1>
+        <div class="tagline">נחש את הח"כ לפי הצבעתו בכנסת</div>
+      </div>
+      <div class="accent-bar"><span></span><span></span><span></span></div>
+
+      <div class="diff-section">
+        <div class="diff-label">בחר רמת קושי</div>
+        <div class="diff-row">
+          <button class="diff-btn easy" id="diff-easy" onclick="setDiff('easy')">
+            <span class="diff-icon">😊</span>
+            <span>קל</span>
+            <span class="diff-lives">10 ניחושים</span>
+          </button>
+          <button class="diff-btn medium active" id="diff-medium" onclick="setDiff('medium')">
+            <span class="diff-icon">🤔</span>
+            <span>בינוני</span>
+            <span class="diff-lives">8 ניחושים</span>
+          </button>
+          <button class="diff-btn hard" id="diff-hard" onclick="setDiff('hard')">
+            <span class="diff-icon">🔥</span>
+            <span>קשה</span>
+            <span class="diff-lives">5 ניחושים</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="home-actions">
+        <button class="btn-start" onclick="startGame()">▶ שחק עכשיו</button>
+        <button class="btn-howto" onclick="openModal()">❓ איך משחקים?</button>
+      </div>
+      <div class="credit">פיתוח: גיל פלדמן</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAY -->
+<div id="screen-play" class="screen">
+  <div class="play-wrap" id="play-wrap">
+
+    <div class="play-header">
+      <button class="btn-back" onclick="goHome()">◄ חזור</button>
+      <div class="header-info">
+        <div class="header-sub">מי אני הח"כ?</div>
+        <div class="header-title" id="header-title">—</div>
+      </div>
+    </div>
+
+    <div class="vote-ctx" id="vote-ctx">
+      <div class="vote-ctx-sentence">
+        הצבעתי <span class="vote-badge" id="vote-badge">בעד</span> בנושא <span class="vote-ctx-name" id="vote-ctx-name">—</span>
+      </div>
+    </div>
+
+    <div class="vote-scene">
+      <div class="vote-stage" id="vote-stage">
+        <div class="vm-ground"></div>
+
+        <!-- MK SVG figure -->
+        <div class="vm-mk mk-walking" id="vm-mk">
+          <svg viewBox="0 0 32 70" xmlns="http://www.w3.org/2000/svg" width="32" height="70">
+            <g class="mk-body-grp">
+              <!-- Head -->
+              <circle cx="16" cy="9" r="7" fill="#f5d0a9" stroke="#c9a880" stroke-width="1"/>
+              <!-- Hair -->
+              <ellipse cx="16" cy="4" rx="6" ry="3" fill="#4a3728"/>
+              <!-- Suit jacket -->
+              <rect class="mk-torso" x="8" y="16" width="16" height="22" rx="3" fill="#1e2d7d"/>
+              <!-- White shirt -->
+              <rect x="13" y="16" width="6" height="18" fill="#e8eaf6"/>
+              <!-- Tie -->
+              <polygon points="16,17 14.5,24 16,26 17.5,24" fill="#f0436a"/>
+              <!-- Left arm -->
+              <rect class="mk-arm-l" x="4" y="17" width="5" height="16" rx="2.5" fill="#1e2d7d"/>
+              <!-- Right arm -->
+              <rect class="mk-arm-r" x="23" y="17" width="5" height="16" rx="2.5" fill="#1e2d7d"/>
+              <!-- Left leg -->
+              <rect class="mk-leg-l" x="9"  y="37" width="6" height="22" rx="3" fill="#111827"/>
+              <!-- Right leg -->
+              <rect class="mk-leg-r" x="17" y="37" width="6" height="22" rx="3" fill="#111827"/>
+              <!-- Shoes -->
+              <ellipse cx="12" cy="59" rx="5" ry="3" fill="#0a0a0a"/>
+              <ellipse cx="20" cy="59" rx="5" ry="3" fill="#0a0a0a"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Ballot slip flying -->
+        <div class="vm-ballot-fly" id="vm-ballot-fly"></div>
+
+        <!-- Ballot box -->
+        <div class="vm-box">
+          <div class="vm-fill" id="vm-fill"></div>
+          <div class="vm-screen">הצבעה</div>
+          <div class="vm-buttons">
+            <div class="vm-btn-for"></div>
+            <div class="vm-btn-against"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span class="lives-label">חיים:</span>
+        <div class="lives-wrap" id="lives-wrap"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;" id="guess-counter">0/0 ניחושים שגויים</div>
+    </div>
+
+    <div class="hint-row">
+      <span class="faction-hint" id="faction-hint">סיעה: טוען...</span>
+    </div>
+
+    <div class="name-display" id="name-display"></div>
+
+    <div class="keyboard" id="keyboard"></div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- Flash -->
+<div class="flash" id="flash"></div>
+
+<!-- Modal instructions -->
+<div id="modal" class="modal-overlay" style="display:none" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-title">🏛️ מי אני הח"כ? — איך משחקים?</div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <div class="modal-step-icon">🗳️</div>
+        <div class="modal-step-text">מוצגת <strong>הצבעה אמיתית מהכנסת</strong> — בעד או נגד</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🔠</div>
+        <div class="modal-step-text">לחצו על <strong>אותיות עבריות</strong> כדי לנחש את שמו של חבר/ת הכנסת שהצביע/ה כך</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🏛️</div>
+        <div class="modal-step-text"><strong>רמז:</strong> הסיעה של הח"כ תמיד מוצגת</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">❤️</div>
+        <div class="modal-step-text">כל ניחוש שגוי = חיים אחד פחות — <strong>אל תסיימו את החיים!</strong></div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">📊</div>
+        <div class="modal-step-text">בסיום כל סיבוב מוצגות <strong>תוצאות ההצבעה המלאות</strong></div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="closeModal()">הבנתי, בואו נשחק! ▶</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7mtU_4w7tz6Iz4VPAkO5eUdEnil2PsiLpo17zscAJNxMJml7p5qBr9wJifIgiYlpy/exec";
+const POST_URL = "https://script.google.com/macros/s/AKfycbxHS4lwq6jtrwEK1sINrwG8JDHC5YD-QUO4eTHpU4yG-e83iT9OtbsADOlBZB62OirS/exec";
+const API_BASES = [
+  "https://www.knesset.gov.il",
+  "https://knesset.gov.il",
+  "https://main.knesset.gov.il",
+];
+const DETAIL_PATH = "/WebSiteApi/knessetapi/Votes/GetVoteDetails/";
+const CACHE_KEY   = "mi-ani-hachak-cache-v1";
+
+const DIFF_LIVES = { easy: 10, medium: 8, hard: 5 };
+// Man parts shown in order per wrong guess
+// vote scene constants
+const MK_POSITIONS = [10, 20, 30, 42, 54, 66, 76, 86]; // left% per wrong guess
+
+// Hebrew keyboard layout
+// Real Hebrew keyboard layout (no final letters)
+const KB_ROWS = [
+  ["ק","ר","א","ט","ו","מ","פ"],
+  ["ש","ד","ג","כ","ע","י","ח","ל"],
+  ["ז","ס","ב","ה","נ","ת","צ"],
+];
+// No final letters — treat finals in name as their base form
+const FINAL_TO_REG = {"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-" + id).classList.add("active");
+}
+function setLoadMsg(m) { document.getElementById("load-msg").textContent = m; }
+function sleep(ms)     { return new Promise(r => setTimeout(r, ms)); }
+function readCache()   { try { return JSON.parse(localStorage.getItem(CACHE_KEY)||"{}"); } catch { return {}; } }
+function writeCache(d) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)); } catch {} }
+function shuffle(arr)  { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s)        { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+let allGames = [];
+let currentDiff = "medium";
+
+function normalizeVote(title) {
+  if (!title) return null;
+  const t = title.trim();
+  if (t === "בעד")  return "for";
+  if (t === "נגד")  return "against";
+  if (t === "נמנע" || t === "נמנע/נעדר" || t === "נעדר") return "abstain";
+  return null;
+}
+
+async function fetchSheetRows() {
+  const resp = await fetch(APPS_SCRIPT_URL);
+  const data = await resp.json();
+  if (!Array.isArray(data)) throw new Error("שגיאה בטעינת הנתונים");
+  return data
+    .filter(r => r.voteId && /^\d+$/.test(r.voteId) && r.type)
+    .map(r => ({
+      ...r,
+      shortName: (r.shortName || r.short_name || "").trim(),
+      voteDir: r.type,
+    }));
+}
+
+async function fetchVoteDetails(voteId) {
+  for (const base of API_BASES) {
+    try {
+      const r = await fetch(base + DETAIL_PATH + voteId, { mode:"cors" });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      if (data?.VoteDetails) return data;
+    } catch(_) {}
+    await sleep(150);
+  }
+  throw new Error(`לא ניתן לטעון הצבעה ${voteId}`);
+}
+
+function buildGame(row, data) {
+  const header  = data.VoteHeader?.[0] || {};
+  const details = data.VoteDetails   || [];
+  const dir     = (row.voteDir || "").trim(); // "בעד" or "נגד"
+  const targetVote = dir === "בעד" ? "for" : dir === "נגד" ? "against" : null;
+  if (!targetVote) return null;
+
+  const allMembers = details
+    .filter(d => normalizeVote(d.Title))
+    .map(d => ({
+      name:    (d.MkName || "").trim(),
+      vote:    normalizeVote(d.Title),
+      faction: (d.FactionName || "").trim(),
+    }));
+
+  const targets = allMembers.filter(m => m.vote === targetVote);
+  if (targets.length < 2) return null;
+
+  return {
+    voteId:    row.voteId,
+    title:     header.ItemTitle || "ללא כותרת",
+    shortName: row.shortName   || "",
+    date:      header.VoteDateStr || "",
+    voteDir:   dir,
+    targetVote,
+    targets,
+    allMembers,
+  };
+}
+
+async function loadGames(bustCache = false) {
+  showScreen("loading");
+  setLoadMsg("טוען רשימת הצבעות...");
+  try {
+    if (bustCache) writeCache({});
+    const rows  = await fetchSheetRows();
+    if (!rows.length) throw new Error("לא נמצאו הצבעות פעילות");
+    const cache = readCache();
+
+    setLoadMsg("טוען פרטי הצבעות...");
+    const results = await Promise.all(
+      rows.slice(0, 6).map(async row => {
+        if (cache[row.voteId]) return cache[row.voteId];
+        try {
+          const data = await fetchVoteDetails(row.voteId);
+          const game = buildGame(row, data);
+          if (game) cache[row.voteId] = game;
+          return game;
+        } catch(_) { return null; }
+      })
+    );
+    allGames = results.filter(Boolean);
+    if (!allGames.length) throw new Error("לא נמצאו הצבעות תקינות");
+    writeCache(cache);
+
+    showScreen("home");
+
+    // Load rest in background
+    rows.slice(6).forEach(async row => {
+      if (cache[row.voteId]) {
+        if (!allGames.find(g => g.voteId === row.voteId)) allGames.push(cache[row.voteId]);
+        return;
+      }
+      try {
+        const data = await fetchVoteDetails(row.voteId);
+        const game = buildGame(row, data);
+        if (game) { cache[row.voteId] = game; allGames.push(game); writeCache(cache); }
+      } catch(_) {}
+    });
+  } catch(e) {
+    document.getElementById("error-msg").textContent = e.message;
+    showScreen("error");
+  }
+}
+
+// ══════════════════════════════════════════════
+// DIFFICULTY
+// ══════════════════════════════════════════════
+function setDiff(d) {
+  currentDiff = d;
+  document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("diff-" + d).classList.add("active");
+}
+
+// ══════════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════════
+let gs = null;
+
+function startGame() {
+  if (!allGames.length) return;
+  const game   = allGames[Math.floor(Math.random() * allGames.length)];
+  const target = game.targets[Math.floor(Math.random() * game.targets.length)];
+  const maxLives = DIFF_LIVES[currentDiff];
+
+  gs = {
+    game,
+    target,
+    maxLives,
+    wrongGuesses: 0,
+    guessedLetters: new Set(),
+    correctLetters: [],
+    wrongLetters: [],
+    guessSequence: [],
+    startTime: Date.now(),
+    over: false,
+    won: false,
+  };
+
+  // UI setup
+  document.getElementById("header-title").textContent = game.shortName || game.title;
+
+  const badge = document.getElementById("vote-badge");
+  badge.textContent = game.voteDir;
+  badge.className   = "vote-badge " + (game.targetVote === "for" ? "for" : "against");
+  document.getElementById("vote-ctx-name").textContent = game.shortName || game.title;
+  const factionEl = document.getElementById("faction-hint");
+  if (currentDiff === "easy") {
+    factionEl.textContent = "סיעה: " + target.faction;
+    factionEl.style.display = "";
+  } else {
+    factionEl.style.display = "none";
+  }
+
+  buildNameDisplay();
+  buildKeyboard();
+  buildGallows();
+  buildLives();
+  updateGuessCounter();
+
+  showScreen("play");
+}
+
+function goHome() {
+  gs = null;
+  showScreen("home");
+}
+
+// Normalize for matching: treat final letters as their base
+function normLetter(l) { const finals = {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}; return finals[l] || l; }
+
+// Get display letters of name (split by space for separate words)
+function isHebrewLetter(ch) {
+  const cp = ch.charCodeAt(0);
+  // Hebrew letters: 0x05D0-0x05EA (alef to tav, including finals)
+  return cp >= 0x05D0 && cp <= 0x05EA;
+}
+
+function nameLetters() {
+  return gs.target.name.split("").map(ch => ({
+    ch,
+    isSpace: ch === " ",
+    isNonHebrew: ch !== " " && !isHebrewLetter(ch),
+  }));
+}
+
+function buildNameDisplay() {
+  const wrap = document.getElementById("name-display");
+  wrap.innerHTML = "";
+  const letters = nameLetters();
+  letters.forEach((item, i) => {
+    const slot = document.createElement("div");
+    slot.className = "letter-slot";
+    const char = document.createElement("div");
+    char.id = "lc-" + i;
+    const line = document.createElement("div");
+    line.id = "ll-" + i;
+    if (item.isSpace) {
+      char.className = "letter-char space";
+      char.textContent = " ";
+      char.style.minWidth = "12px";
+      line.style.display = "none";
+      slot.style.marginRight = "6px";
+    } else if (item.isNonHebrew) {
+      // Non-Hebrew chars (apostrophe, etc.) shown immediately
+      char.className = "letter-char revealed";
+      char.textContent = item.ch;
+      char.style.color = "var(--muted)";
+      char.style.fontSize = "14px";
+      line.className = "letter-line revealed";
+    } else {
+      char.className = "letter-char";
+      char.textContent = item.ch;
+      line.className = "letter-line";
+    }
+    slot.appendChild(char);
+    slot.appendChild(line);
+    wrap.appendChild(slot);
+  });
+}
+
+function revealLetters(letter) {
+  const norm = normLetter(letter);
+  const letters = nameLetters();
+  letters.forEach((item, i) => {
+    if (!item.isSpace && !item.isNonHebrew && normLetter(item.ch) === norm) {
+      const lc = document.getElementById("lc-" + i);
+      const ll = document.getElementById("ll-" + i);
+      if (lc) { lc.classList.add("revealed"); }
+      if (ll) { ll.classList.add("revealed"); }
+    }
+  });
+}
+
+function revealAll() {
+  const letters = nameLetters();
+  letters.forEach((item, i) => {
+    if (!item.isSpace && !item.isNonHebrew) {
+      const lc = document.getElementById("lc-" + i);
+      const ll = document.getElementById("ll-" + i);
+      if (lc) { lc.classList.add("revealed"); }
+      if (ll) { ll.classList.add("revealed"); }
+    }
+  });
+}
+
+function allRevealed() {
+  const letters = nameLetters();
+  return letters.filter(l => !l.isSpace && !l.isNonHebrew).every((item) => {
+    const norm = normLetter(item.ch);
+    return [...gs.guessedLetters].some(g => normLetter(g) === norm);
+  });
+}
+
+function buildKeyboard() {
+  const kb = document.getElementById("keyboard");
+  kb.innerHTML = "";
+  KB_ROWS.forEach(row => {
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "kb-row";
+    row.forEach(letter => {
+      const btn = document.createElement("button");
+      btn.className = "kb-btn";
+      btn.id = "kb-" + letter;
+      btn.textContent = letter;
+      btn.onclick = () => guess(letter);
+      rowDiv.appendChild(btn);
+    });
+    kb.appendChild(rowDiv);
+  });
+}
+
+function buildGallows() {
+  const mk   = document.getElementById("vm-mk");
+  const fill = document.getElementById("vm-fill");
+  if (mk)   { mk.style.left = "4px"; mk.className = "vm-mk mk-walking"; }
+  if (fill) fill.style.height = "0%";
+}
+
+function buildLives() {
+  const wrap = document.getElementById("lives-wrap");
+  wrap.innerHTML = "";
+  for (let i = 0; i < gs.maxLives; i++) {
+    const dot = document.createElement("span");
+    dot.className = "life-dot";
+    dot.id = "life-" + i;
+    dot.textContent = "👎";
+    wrap.appendChild(dot);
+  }
+}
+
+function updateGuessCounter() {
+  document.getElementById("guess-counter").textContent =
+    `${gs.wrongGuesses}/${gs.maxLives} ניחושים שגויים`;
+}
+
+function updateGallows() {
+  const ratio  = gs.wrongGuesses / gs.maxLives;
+  const mk     = document.getElementById("vm-mk");
+  const fill   = document.getElementById("vm-fill");
+  const slip   = document.getElementById("vm-ballot-fly");
+  // Stage is 260px wide; box right edge at ~198px; mk width 32px => stop at ~162px
+  const leftPx = Math.round(4 + ratio * 158);
+  if (mk) {
+    mk.style.left = leftPx + "px";
+    // Stop walking animation when very close to box
+    mk.className = (ratio >= 0.95) ? "vm-mk mk-idle" : "vm-mk mk-walking";
+  }
+  if (fill) fill.style.height = Math.round(ratio * 90) + "%";
+  // Ballot slip flies from MK toward box on each wrong guess
+  if (slip && gs.wrongGuesses > 0) {
+    slip.style.left   = (leftPx + 20) + "px";
+    slip.style.bottom = "48px";
+    slip.classList.remove("go");
+    void slip.offsetWidth;
+    slip.classList.add("go");
+  }
+}
+
+function updateLives() {
+  for (let i = 0; i < gs.maxLives; i++) {
+    const dot = document.getElementById("life-" + i);
+    if (dot) dot.classList.toggle("lost", i >= gs.maxLives - gs.wrongGuesses);
+  }
+}
+
+function flashScreen(color) {
+  const f = document.getElementById("flash");
+  f.className = "flash " + color;
+  f.style.opacity = "1";
+  setTimeout(() => { f.style.opacity = "0"; }, 300);
+}
+
+function disableKeyboard() {
+  document.querySelectorAll(".kb-btn").forEach(b => b.disabled = true);
+}
+
+// ── GUESS ──
+function guess(letter) {
+  if (!gs || gs.over) return;
+  if (gs.guessedLetters.has(letter)) return;
+
+  const norm = normLetter(letter);
+  gs.guessedLetters.add(letter);
+  gs.guessSequence.push(letter);
+  const btn = document.getElementById("kb-" + letter);
+
+  // Check if the name contains this letter
+  const nameNorms = nameLetters().filter(l => !l.isSpace && !l.isNonHebrew).map(l => normLetter(l.ch));
+  const hit = nameNorms.includes(norm);
+
+  if (hit) {
+    gs.correctLetters.push(letter);
+    flashScreen("green");
+    revealLetters(letter);
+    if (btn) btn.classList.add("hit");
+    if (allRevealed()) {
+      gs.won = true;
+      gs.over = true;
+      setTimeout(() => showResult(), 400);
+    }
+  } else {
+    gs.wrongLetters.push(letter);
+    flashScreen("red");
+    if (btn) btn.classList.add("miss");
+    gs.wrongGuesses++;
+    updateGallows();
+    updateLives();
+    updateGuessCounter();
+    if (gs.wrongGuesses >= gs.maxLives) {
+      gs.over = true;
+      revealAll();
+      setTimeout(() => showResult(), 500);
+    }
+  }
+}
+
+// ── RESULT ──
+function showResult() {
+  disableKeyboard();
+  const won      = gs.won;
+  const game     = gs.game;
+  const target   = gs.target;
+  const voteLabels = { for:"בעד", against:"נגד", abstain:"נמנע" };
+
+  // ── שמירת תוצאה לגוגל שיט ──
+  const duration = Math.round((Date.now() - gs.startTime) / 1000);
+  fetch(POST_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify({
+      game:          "hangman",
+      difficulty:    currentDiff,
+      result:        won ? "win" : "lose",
+      duration:      duration,
+      wrongGuesses:  gs.wrongGuesses,
+      maxGuesses:    gs.maxLives,
+      correctLetters: gs.correctLetters.join(""),
+      wrongLetters:   gs.wrongLetters.join(""),
+      guessSequence:  gs.guessSequence.join(""),
+      mkName:         target.name,
+      voteId:         game.voteId,
+      voteShortName:  game.shortName || game.title,
+      voteType:       game.voteDir,
+    }),
+  }).catch(() => {});
+
+  // Build full results list (sorted: for > against > abstain)
+  const order  = { for:0, against:1, abstain:2 };
+  const sorted = [...game.allMembers].sort((a,b) => order[a.vote] - order[b.vote]);
+
+  const frHTML = sorted.map(m => {
+    const isTarget = m.name === target.name;
+    return `<div class="fr-row ${m.vote}" style="${isTarget ? 'background:rgba(0,188,212,0.12);' : ''}">
+      <div><div class="fr-name">${esc(m.name)}${isTarget ? " 🎯" : ""}</div><div class="fr-faction">${esc(m.faction)}</div></div>
+      <span class="fr-vote ${m.vote}">${voteLabels[m.vote]}</span>
+    </div>`;
+  }).join("");
+
+  const forCount     = game.allMembers.filter(m => m.vote === "for").length;
+  const againstCount = game.allMembers.filter(m => m.vote === "against").length;
+
+  const overlay = document.createElement("div");
+  overlay.className = "result-overlay";
+  overlay.id = "result-overlay";
+  overlay.style.setProperty("--border-color", won ? "var(--lime)" : "var(--pink)");
+  overlay.innerHTML = `
+    <div class="result-box" style="--border-color:${won ? "var(--lime)" : "var(--pink)"}">
+      <span class="result-emoji">${won ? "🎉" : "💀"}</span>
+      <div class="result-title" style="color:${won ? "var(--lime)" : "var(--pink)"}">${won ? "כל הכבוד!" : "נפסלת!"}</div>
+      <div class="result-name">${esc(target.name)}</div>
+      <div class="result-vote-row">
+        <span class="vote-badge ${target.vote}">${voteLabels[target.vote]}</span>
+        <span>${esc(game.shortName || game.title)}</span>
+      </div>
+      <div class="result-stats">
+        <div class="rstat"><div class="rstat-val" style="color:#4ade80">${forCount}</div><div class="rstat-lbl">בעד</div></div>
+        <div class="rstat"><div class="rstat-val" style="color:var(--pink)">${againstCount}</div><div class="rstat-lbl">נגד</div></div>
+        <div class="rstat"><div class="rstat-val" style="color:var(--gold)">${game.allMembers.length - forCount - againstCount}</div><div class="rstat-lbl">נמנע</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;text-align:right;width:100%;padding:0 4px">תוצאות מלאות:</div>
+      <div class="full-results">${frHTML}</div>
+      <div class="result-actions">
+        <button class="btn-next" onclick="nextRound()">▶ סיבוב נוסף</button>
+        <button class="btn-home" onclick="document.getElementById('result-overlay').remove();goHome()">🏠 בית</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function nextRound() {
+  const ov = document.getElementById("result-overlay");
+  if (ov) ov.remove();
+  startGame();
+}
+
+// ══════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════
+function openModal()          { document.getElementById("modal").style.display = "flex"; }
+function closeModal()         { document.getElementById("modal").style.display = "none"; }
+function closeModalOutside(e) { if (e.target.id === "modal") closeModal(); }
+
+// ══════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════
+loadGames();
+</script>
+</body>
+</html>
