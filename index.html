@@ -778,21 +778,35 @@ function buildNameDisplay() {
   const wrap = document.getElementById("name-display");
   wrap.innerHTML = "";
   const letters = nameLetters();
+
+  // Split into words (by spaces), render each word as a no-break group
+  let wordGroup = null;
+
   letters.forEach((item, i) => {
+    if (item.isSpace) {
+      // Close current word group, add spacer
+      wordGroup = null;
+      const spacer = document.createElement("div");
+      spacer.style.cssText = "width:12px;flex-shrink:0;";
+      wrap.appendChild(spacer);
+      return;
+    }
+
+    // Start a new word group if needed
+    if (!wordGroup) {
+      wordGroup = document.createElement("div");
+      wordGroup.style.cssText = "display:inline-flex;flex-wrap:nowrap;gap:5px;align-items:flex-end;";
+      wrap.appendChild(wordGroup);
+    }
+
     const slot = document.createElement("div");
     slot.className = "letter-slot";
     const char = document.createElement("div");
     char.id = "lc-" + i;
     const line = document.createElement("div");
     line.id = "ll-" + i;
-    if (item.isSpace) {
-      char.className = "letter-char space";
-      char.textContent = " ";
-      char.style.minWidth = "12px";
-      line.style.display = "none";
-      slot.style.marginRight = "6px";
-    } else if (item.isNonHebrew) {
-      // Non-Hebrew chars (apostrophe, etc.) shown immediately
+
+    if (item.isNonHebrew) {
       char.className = "letter-char revealed";
       char.textContent = item.ch;
       char.style.color = "var(--muted)";
@@ -803,12 +817,12 @@ function buildNameDisplay() {
       char.textContent = item.ch;
       line.className = "letter-line";
     }
+
     slot.appendChild(char);
     slot.appendChild(line);
-    wrap.appendChild(slot);
+    wordGroup.appendChild(slot);
   });
 }
-
 function revealLetters(letter) {
   const norm = normLetter(letter);
   const letters = nameLetters();
