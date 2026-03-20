@@ -5,207 +5,306 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <title>מי אני?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --navy:    #1a237e;
-  --navy2:   #1e2d7d;
-  --cyan:    #00bcd4;
-  --lime:    #c6d92f;
-  --pink:    #f0436a;
-  --gold:    #f59e0b;
-  --bg:      #0d1240;
-  --surface: rgba(26,35,126,0.6);
-  --muted:   #8e9be0;
-  --text:    #ffffff;
-  --shadow-neon: 0 0 20px rgba(0,188,212,0.4);
+  /* צבעים ראשיים */
+  --knesset:   #1a3a5c;
+  --gold:      #d4a843;
+  --accent:    #e63946;
+  --green:     #2dc653;
+  --blue:      #2563eb;
+
+  /* רקעים */
+  --sky:       #e8f4fd;
+  --sky2:      #d0eaf8;
+  --white:     #ffffff;
+  --card-bg:   #ffffff;
+
+  /* טקסט */
+  --text:      #1e293b;
+  --muted:     #64748b;
+
+  /* צללים */
+  --shadow:    0 4px 24px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
+
+  /* רדיוסים */
+  --r:         16px;
+  --r-sm:      10px;
+
+  /* legacy aliases */
+  --navy:    #1a3a5c;
+  --cyan:    #2563eb;
+  --lime:    #2dc653;
+  --pink:    #e63946;
+  --muted-light: #64748b;
+  --navy2:   #1a3a5c;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  min-height: 100dvh;
-  background: radial-gradient(circle at top, #1e2d7d 0%, #0d1240 80%);
-  font-family: 'Heebo', Arial, sans-serif;
+html, body {
+  height: 100%;
+  font-family: 'Rubik', sans-serif;
   direction: rtl;
   color: var(--text);
-  overflow-x: hidden;
+  overflow: hidden;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--sky);
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 body::before {
   content: '';
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
-    linear-gradient(rgba(0,188,212,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,188,212,0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
+    radial-gradient(circle at 15% 15%, rgba(212,168,67,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(37,99,235,0.05) 0%, transparent 50%);
 }
 
-#app { position: relative; z-index: 1; min-height: 100dvh; display: flex; flex-direction: column; }
+#app {
+  position: relative; z-index: 1;
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+}
 
 /* SCREENS */
 .screen { display: none; flex: 1; }
 .screen.active { display: flex; flex-direction: column; }
 
-@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 
 /* ─── LOADING ─── */
-#screen-loading { align-items:center; justify-content:center; gap:20px; }
-.load-bars { display:flex; align-items:flex-end; gap:5px; height:48px; }
-.load-bars span { border-radius:3px 3px 0 0; width:12px; animation:barPulse 1.2s ease-in-out infinite; }
-.load-bars span:nth-child(1) { height:48px; background:var(--cyan); animation-delay:0s; box-shadow:0 0 12px var(--cyan); }
-.load-bars span:nth-child(2) { height:36px; background:var(--lime); animation-delay:0.15s; box-shadow:0 0 12px var(--lime); }
-.load-bars span:nth-child(3) { height:24px; background:var(--pink); animation-delay:0.3s; box-shadow:0 0 12px var(--pink); }
+#screen-loading {
+  align-items:center; justify-content:center; gap:20px;
+  background: linear-gradient(180deg, #c9e8f8 0%, #e8f4fd 60%);
+}
+.load-bars { display:flex; align-items:flex-end; gap:5px; height:44px; }
+.load-bars span { border-radius:4px 4px 0 0; width:12px; animation:barPulse 1.2s ease-in-out infinite; }
+.load-bars span:nth-child(1) { height:44px; background:var(--knesset); animation-delay:0s; }
+.load-bars span:nth-child(2) { height:34px; background:var(--gold); animation-delay:0.15s; }
+.load-bars span:nth-child(3) { height:24px; background:var(--accent); animation-delay:0.3s; }
 @keyframes barPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0.5;transform:scaleY(0.7)} }
-.load-title { font-size:32px; font-weight:900; text-shadow:0 0 15px rgba(0,188,212,0.6); }
+.load-title { font-size:28px; font-weight:900; color:var(--knesset); }
 @keyframes spin { to { transform:rotate(360deg); } }
-.spinner { width:44px;height:44px;border:4px solid rgba(255,255,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:var(--shadow-neon); }
-#load-msg { color:var(--muted); font-size:14px; font-weight:500; }
+.spinner { width:40px;height:40px;border:3px solid rgba(26,58,92,0.12);border-top-color:var(--knesset);border-radius:50%;animation:spin 0.8s linear infinite; }
+#load-msg { color:var(--muted); font-size:14px; font-weight:500; font-family:'Assistant',sans-serif; }
 
 /* ─── ERROR ─── */
-#screen-error { align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center; }
-.error-box { color:#ff8a80;font-size:13px;max-width:340px;line-height:1.7;background:rgba(240,67,106,0.12);border:1px solid rgba(240,67,106,0.35);border-radius:10px;padding:12px 16px; }
+#screen-error {
+  align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center;
+  background: linear-gradient(180deg, #c9e8f8 0%, #e8f4fd 60%);
+}
+.error-box {
+  color:#b91c1c; font-size:13px; max-width:340px; line-height:1.7;
+  background:rgba(230,57,70,0.08); border:1px solid rgba(230,57,70,0.3);
+  border-radius:var(--r-sm); padding:12px 16px;
+  font-family:'Assistant',sans-serif;
+}
 
 /* ─── HOME ─── */
-#screen-home { align-items:center; justify-content:center; padding:24px; gap:0; }
-.home-inner { width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center; gap:0; }
+#screen-home {
+  background: linear-gradient(180deg, #a8d8f0 0%, #c9e8f8 30%, #e8f4fd 55%, #e8f4fd 100%);
+  overflow-y: auto;
+}
 
-.game-logo { text-align:center; margin-bottom:28px; animation:fadeUp 0.6s ease; }
-.game-logo-emoji { font-size:56px; display:block; margin-bottom:6px; filter:drop-shadow(0 0 20px rgba(0,188,212,0.6)); }
-.game-logo h1 { font-size:clamp(26px,7vw,38px); font-weight:900; letter-spacing:-0.5px; line-height:1.1; }
-.game-logo h1 span.cyan { color:var(--cyan); }
-.game-logo h1 span.lime { color:var(--lime); }
-.game-logo .tagline { color:var(--muted); font-size:14px; font-weight:600; margin-top:6px; letter-spacing:0.5px; }
+.home-inner {
+  width:100%; max-width:420px;
+  display:flex; flex-direction:column; align-items:center;
+  margin: 0 auto;
+}
 
-.accent-bar { display:flex; gap:6px; justify-content:center; margin:14px 0 22px; }
+/* sky section */
+.home-sky {
+  padding: 36px 20px 24px;
+  text-align:center;
+  animation:fadeUp 0.5s ease;
+}
+
+.game-logo { text-align:center; }
+.game-logo-emoji {
+  font-size:52px; display:block; margin-bottom:8px;
+  filter:drop-shadow(0 4px 12px rgba(26,58,92,0.2));
+}
+.game-logo h1 {
+  font-size:clamp(26px,7vw,36px); font-weight:900;
+  letter-spacing:-0.5px; line-height:1.1;
+  color: var(--knesset);
+}
+.game-logo h1 span.cyan { color:var(--blue); }
+.game-logo h1 span.lime { color:var(--green); }
+.game-logo .tagline {
+  color:var(--muted); font-size:14px; font-weight:500;
+  margin-top:6px; font-family:'Assistant',sans-serif;
+}
+
+.accent-bar { display:flex; gap:6px; justify-content:center; margin:14px 0 0; }
 .accent-bar span { height:5px; border-radius:5px; }
-.accent-bar span:nth-child(1) { width:44px; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
-.accent-bar span:nth-child(2) { width:22px; background:var(--lime); box-shadow:0 0 8px var(--lime); }
-.accent-bar span:nth-child(3) { width:11px; background:var(--pink); box-shadow:0 0 8px var(--pink); }
+.accent-bar span:nth-child(1) { width:40px; background:var(--knesset); }
+.accent-bar span:nth-child(2) { width:20px; background:var(--gold); }
+.accent-bar span:nth-child(3) { width:10px; background:var(--accent); }
 
-.diff-section { width:100%; margin-bottom:18px; animation:fadeUp 0.6s 0.1s ease both; }
-.diff-label { font-size:11px; letter-spacing:2px; font-weight:700; color:var(--muted); text-transform:uppercase; text-align:center; margin-bottom:10px; }
+/* white card sheet */
+.home-card-sheet {
+  background: var(--white);
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px 40px;
+  width: 100%;
+  flex: 1;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.diff-section { width:100%; margin-bottom:20px; animation:fadeUp 0.5s 0.1s ease both; }
+.diff-label {
+  font-size:10px; letter-spacing:2px; font-weight:700;
+  color:var(--muted); text-transform:uppercase; text-align:center;
+  margin-bottom:10px; font-family:'Assistant',sans-serif;
+}
 .diff-row { display:flex; gap:8px; }
 .diff-btn {
-  flex:1; padding:12px 8px; border-radius:12px;
-  border:2px solid rgba(255,255,255,0.15);
-  background:rgba(0,0,0,0.2);
-  color:var(--muted); font-size:13px; font-weight:800;
-  cursor:pointer; transition:all 0.2s; font-family:inherit;
+  flex:1; padding:10px 6px; border-radius:14px;
+  border:2px solid #e2e8f0;
+  background:#f8fafc;
+  color:var(--muted); font-size:13px; font-weight:700;
+  cursor:pointer; transition:all 0.2s; font-family:'Rubik',sans-serif;
   display:flex; flex-direction:column; align-items:center; gap:3px;
 }
 .diff-btn .diff-icon { font-size:20px; }
-.diff-btn .diff-lives { font-size:10px; font-weight:600; opacity:0.7; }
-.diff-btn.easy.active   { background:rgba(198,217,47,0.15); border-color:var(--lime); color:var(--lime); box-shadow:0 0 12px rgba(198,217,47,0.3); }
-.diff-btn.medium.active { background:rgba(0,188,212,0.15);  border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 12px rgba(0,188,212,0.3); }
-.diff-btn.hard.active   { background:rgba(240,67,106,0.15); border-color:var(--pink); color:var(--pink); box-shadow:0 0 12px rgba(240,67,106,0.3); }
+.diff-btn .diff-lives { font-size:10px; font-weight:600; color:var(--muted); font-family:'Assistant',sans-serif; }
+.diff-btn.easy.active   { border-color:var(--green);  background:rgba(45,198,83,0.08);  color:#15803d; }
+.diff-btn.medium.active { border-color:var(--blue);   background:rgba(37,99,235,0.08);  color:var(--blue); }
+.diff-btn.hard.active   { border-color:var(--accent); background:rgba(230,57,70,0.08); color:#b91c1c; }
 
-.home-actions { width:100%; display:flex; flex-direction:column; gap:10px; animation:fadeUp 0.6s 0.2s ease both; }
+.home-actions { width:100%; display:flex; flex-direction:column; gap:10px; animation:fadeUp 0.5s 0.2s ease both; }
 .btn-start {
-  width:100%; padding:16px; border-radius:14px; border:none;
-  background:var(--cyan); color:var(--navy);
-  font-size:18px; font-weight:900; cursor:pointer; font-family:inherit;
-  box-shadow:0 6px 0 #008ba3, 0 10px 20px rgba(0,188,212,0.35);
+  width:100%; padding:15px; border-radius:14px; border:none;
+  background:var(--knesset); color:var(--white);
+  font-size:17px; font-weight:900; cursor:pointer; font-family:'Rubik',sans-serif;
+  box-shadow:0 6px 0 #0d2240, var(--shadow);
   transition:all 0.1s; position:relative; top:0;
 }
 .btn-start:active { top:6px; box-shadow:0 0 0 transparent; }
 .btn-start:hover  { filter:brightness(1.08); }
-.btn-howto { background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.2); color:var(--muted); border-radius:12px; padding:11px; cursor:pointer; font-size:14px; font-weight:700; font-family:inherit; transition:all 0.2s; }
-.btn-howto:hover { background:rgba(255,255,255,0.13); color:var(--text); }
 
-.credit { color:var(--muted); font-size:11px; margin-top:18px; opacity:0.7; }
+.btn-howto {
+  background:transparent; border:2px solid #e2e8f0; color:var(--muted);
+  border-radius:12px; padding:11px; cursor:pointer;
+  font-size:14px; font-weight:700; font-family:'Rubik',sans-serif;
+  transition:all 0.2s;
+}
+.btn-howto:hover { border-color:var(--knesset); color:var(--knesset); }
+
+.credit { color:var(--muted); font-size:11px; margin-top:18px; font-family:'Assistant',sans-serif; }
 
 /* ─── PLAY ─── */
-#screen-play { padding:0; overflow:hidden; }
+#screen-play {
+  padding:0; overflow:hidden;
+  background: linear-gradient(180deg, #a8d8f0 0%, #c9e8f8 25%, #e8f4fd 45%);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 .play-wrap {
   width:100%; max-width:500px; margin:0 auto;
-  padding:12px 14px 8px;
-  display:flex; flex-direction:column; height:100dvh; overflow:hidden; gap:8px;
+  padding:12px 14px 6px;
+  display:flex; flex-direction:column; height:100dvh; overflow:hidden; gap:7px;
 }
 
 /* Header */
 .play-header { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.btn-back { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); color:var(--text); border-radius:10px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:700; font-family:inherit; transition:all 0.2s; }
-.btn-back:hover { background:var(--cyan); color:var(--navy); border-color:var(--cyan); }
+.btn-back {
+  background:rgba(255,255,255,0.85); border:1.5px solid rgba(26,58,92,0.15);
+  color:var(--knesset); border-radius:var(--r-sm); padding:7px 14px;
+  cursor:pointer; font-size:13px; font-weight:700; font-family:'Rubik',sans-serif;
+  transition:all 0.2s; backdrop-filter:blur(4px);
+}
+.btn-back:hover { background:var(--knesset); color:var(--white); border-color:var(--knesset); }
 .header-info { flex:1; min-width:0; }
-.header-sub { font-size:9px; letter-spacing:3px; font-weight:700; color:var(--cyan); text-transform:uppercase; }
-.header-title { font-size:clamp(11px,2.5vw,14px); font-weight:800; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.header-sub {
+  font-size:8px; letter-spacing:3px; font-weight:700;
+  color:var(--knesset); text-transform:uppercase; opacity:0.55;
+  font-family:'Assistant',sans-serif;
+}
+.header-title {
+  font-size:clamp(11px,2.5vw,14px); font-weight:800;
+  line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  color:var(--knesset);
+}
 
 /* Vote context box */
 .vote-ctx {
   flex-shrink:0;
-  background:rgba(0,0,0,0.35); border:1.5px solid rgba(0,188,212,0.25);
+  background:rgba(255,255,255,0.85); border:1.5px solid rgba(26,58,92,0.1);
   border-radius:14px; padding:10px 14px;
+  box-shadow: var(--shadow);
+  backdrop-filter:blur(6px);
 }
-.vote-ctx-sentence { font-size:14px; font-weight:700; line-height:1.6; display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.vote-ctx-sentence {
+  font-size:13px; font-weight:700; line-height:1.6;
+  display:flex; flex-wrap:wrap; align-items:center; gap:5px;
+  color: var(--knesset);
+}
 .vote-badge {
-  font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; flex-shrink:0;
-  white-space:nowrap;
+  font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; flex-shrink:0; white-space:nowrap;
 }
-.vote-badge.for     { background:rgba(22,163,74,0.2);  color:#4ade80;  border:1px solid rgba(22,163,74,0.4); }
-.vote-badge.against { background:rgba(240,67,106,0.2); color:#fb7185; border:1px solid rgba(240,67,106,0.4); }
-.vote-ctx-name { font-size:14px; font-weight:700; color:var(--text); }
+.vote-badge.for     { background:rgba(45,198,83,0.12);  color:#15803d;  border:1px solid rgba(45,198,83,0.4); }
+.vote-badge.against { background:rgba(230,57,70,0.10); color:#b91c1c; border:1px solid rgba(230,57,70,0.35); }
+.vote-ctx-name { font-size:13px; font-weight:700; color:var(--knesset); }
 
-/* Gallows */
-/* ── VOTE ANIMATION ── */
+/* Vote scene */
 .vote-scene {
   flex-shrink:0; display:flex; justify-content:center; align-items:center;
-  height:120px; position:relative; overflow:hidden;
+  height:110px; position:relative; overflow:hidden;
 }
-.vote-stage {
-  position:relative; width:260px; height:110px;
-}
-/* Ground line */
+.vote-stage { position:relative; width:260px; height:105px; }
+
 .vm-ground {
   position:absolute; bottom:0; left:0; right:0;
-  height:2px; background:rgba(0,188,212,0.2); border-radius:2px;
+  height:2px; background:rgba(26,58,92,0.15); border-radius:2px;
 }
-/* The ballot box / knesset voting machine */
 .vm-box {
   position:absolute; bottom:2px; right:16px;
-  width:62px; height:70px; border-radius:6px 6px 4px 4px;
-  background:linear-gradient(160deg,rgba(30,45,125,0.95),rgba(13,18,64,0.95));
-  border:2px solid var(--cyan);
-  box-shadow:0 0 18px rgba(0,188,212,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+  width:62px; height:68px; border-radius:6px 6px 4px 4px;
+  background:linear-gradient(160deg, #e8f4fd, #d0eaf8);
+  border:2px solid var(--knesset);
+  box-shadow: var(--shadow);
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   padding-top:10px; gap:5px; overflow:hidden;
 }
 .vm-screen {
-  width:42px; height:22px; border-radius:3px;
-  background:rgba(0,0,0,0.5); border:1px solid rgba(0,188,212,0.4);
+  width:42px; height:20px; border-radius:3px;
+  background:rgba(26,58,92,0.08); border:1px solid rgba(26,58,92,0.2);
   display:flex; align-items:center; justify-content:center;
-  font-size:7px; font-weight:800; color:var(--cyan); letter-spacing:0.5px;
+  font-size:7px; font-weight:800; color:var(--knesset); letter-spacing:0.5px;
+  font-family:'Assistant',sans-serif;
 }
-.vm-buttons {
-  display:flex; gap:5px;
-}
+.vm-buttons { display:flex; gap:5px; }
 .vm-btn-for {
   width:14px; height:10px; border-radius:2px;
-  background:rgba(22,163,74,0.7); border:1px solid #4ade80;
-  box-shadow:0 0 5px rgba(22,163,74,0.5);
+  background:rgba(45,198,83,0.6); border:1px solid var(--green);
 }
 .vm-btn-against {
   width:14px; height:10px; border-radius:2px;
-  background:rgba(240,67,106,0.7); border:1px solid var(--pink);
-  box-shadow:0 0 5px rgba(240,67,106,0.5);
+  background:rgba(230,57,70,0.6); border:1px solid var(--accent);
 }
-/* Danger fill rising from bottom */
 .vm-fill {
   position:absolute; bottom:0; left:0; right:0;
   height:0%;
-  background:linear-gradient(0deg,rgba(240,67,106,0.5),rgba(240,67,106,0.1));
+  background:linear-gradient(0deg,rgba(230,57,70,0.35),rgba(230,57,70,0.08));
   transition:height 0.5s cubic-bezier(0.4,0,0.2,1);
   pointer-events:none;
 }
-/* Walking MK - SVG container */
 .vm-mk {
-  position:absolute; bottom:2px;
-  left:4px;
+  position:absolute; bottom:2px; left:4px;
   transition:left 0.55s cubic-bezier(0.4,0,0.2,1);
   width:32px; height:70px;
 }
-/* Walking animation for legs */
 @keyframes legSwingL { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(10deg)} }
 @keyframes legSwingR { 0%,100%{transform:rotate(10deg)}  50%{transform:rotate(-18deg)} }
 @keyframes armSwingL { 0%,100%{transform:rotate(14deg)}  50%{transform:rotate(-10deg)} }
@@ -219,50 +318,50 @@ body::before {
 .mk-idle .mk-leg-l,.mk-idle .mk-leg-r { animation:none; transform:rotate(0deg); }
 .mk-idle .mk-arm-l,.mk-idle .mk-arm-r { animation:none; transform:rotate(0deg); }
 
-/* ballot slip flying */
 .vm-ballot-fly {
   position:absolute; width:12px; height:9px; border-radius:1px;
-  background:#fff; border:1px solid rgba(0,188,212,0.6);
+  background:#fff; border:1px solid rgba(26,58,92,0.3);
   opacity:0; pointer-events:none;
 }
-.vm-ballot-fly.go {
-  animation:slipFly 0.55s cubic-bezier(0.4,0,0.2,1) forwards;
-}
+.vm-ballot-fly.go { animation:slipFly 0.55s cubic-bezier(0.4,0,0.2,1) forwards; }
 @keyframes slipFly {
   0%   { opacity:1; transform:translate(0,0) rotate(0deg); }
   60%  { opacity:1; }
   100% { opacity:0; transform:translate(42px,-18px) rotate(-20deg); }
 }
 
-/* Lives + streak */
+/* Meta row */
 .meta-row { display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:8px; }
 .lives-wrap { display:flex; gap:3px; align-items:center; }
 .life-dot { font-size:14px; transition:all 0.3s; }
 .life-dot.lost { filter:grayscale(1) opacity(0.2); transform:scale(0.7) rotate(-30deg); }
-.lives-label { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-left:5px; }
+.lives-label {
+  font-size:10px; font-weight:700; color:var(--muted);
+  letter-spacing:1px; text-transform:uppercase; margin-left:5px;
+  font-family:'Assistant',sans-serif;
+}
 
 /* Name display */
 .name-display {
   flex-shrink:0;
   display:flex; flex-wrap:wrap; gap:5px; justify-content:center; align-items:center;
   padding:10px 8px;
-  background:rgba(0,0,0,0.25); border-radius:14px;
-  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.85); border-radius:14px;
+  border:1.5px solid rgba(26,58,92,0.1);
   min-height:52px;
+  box-shadow: var(--shadow);
+  backdrop-filter:blur(6px);
 }
-.letter-slot {
-  display:flex; flex-direction:column; align-items:center; gap:2px;
-}
+.letter-slot { display:flex; flex-direction:column; align-items:center; gap:2px; }
 .letter-char {
-  font-size:clamp(18px,5vw,26px); font-weight:900; min-width:22px; text-align:center; line-height:1;
-  color:var(--text); text-shadow:0 0 8px rgba(0,188,212,0.5);
-  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  font-size:clamp(18px,5vw,25px); font-weight:900; min-width:22px; text-align:center; line-height:1;
+  color:var(--knesset); transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   opacity:0; transform:scale(0.5);
 }
 .letter-char.revealed { opacity:1; transform:scale(1); }
-.letter-char.space { opacity:1; transform:scale(1); }
-.letter-line { width:22px; height:2px; background:rgba(255,255,255,0.25); border-radius:2px; }
-.letter-line.revealed { background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
+.letter-char.space    { opacity:1; transform:scale(1); }
+.letter-line { width:22px; height:2px; background:rgba(26,58,92,0.15); border-radius:2px; }
+.letter-line.revealed { background:var(--knesset); box-shadow:0 0 6px rgba(26,58,92,0.3); }
 
 /* Keyboard */
 .keyboard { flex-shrink:0; display:flex; flex-direction:column; gap:5px; }
@@ -271,86 +370,155 @@ body::before {
   font-size:clamp(13px,3.5vw,17px); font-weight:800;
   width:clamp(30px,8.5vw,42px); height:clamp(34px,9vw,46px);
   border:none; border-radius:8px;
-  background:rgba(26,35,126,0.7); color:var(--text);
-  cursor:pointer; font-family:inherit; transition:all 0.12s;
-  border:1.5px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.85); color:var(--knesset);
+  cursor:pointer; font-family:'Rubik',sans-serif; transition:all 0.12s;
+  border:1.5px solid rgba(26,58,92,0.12);
   position:relative; top:0;
-  box-shadow:0 3px 0 rgba(0,0,0,0.4);
+  box-shadow:0 3px 0 rgba(26,58,92,0.15);
+  backdrop-filter:blur(4px);
 }
 .kb-btn:active:not(:disabled) { top:3px; box-shadow:0 0 0 transparent; }
-.kb-btn:hover:not(:disabled) { background:rgba(0,188,212,0.25); border-color:var(--cyan); }
+.kb-btn:hover:not(:disabled)  { background:rgba(37,99,235,0.1); border-color:var(--blue); color:var(--blue); }
 .kb-btn:disabled { opacity:0.22; cursor:not-allowed; transform:none; }
-.kb-btn.hit  { background:rgba(22,163,74,0.3); border-color:#4ade80; color:#4ade80; }
-.kb-btn.miss { background:rgba(240,67,106,0.2); border-color:rgba(240,67,106,0.4); color:rgba(240,67,106,0.6); }
+.kb-btn.hit  { background:rgba(45,198,83,0.15); border-color:var(--green); color:#15803d; }
+.kb-btn.miss { background:rgba(230,57,70,0.1); border-color:rgba(230,57,70,0.35); color:rgba(230,57,70,0.7); }
 
 /* Faction hint */
 .hint-row { flex-shrink:0; text-align:center; }
-.faction-hint { display:inline-block; font-size:12px; font-weight:600; color:var(--muted); background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:3px 14px; }
+.faction-hint {
+  display:inline-block; font-size:12px; font-weight:600; color:var(--muted);
+  background:rgba(255,255,255,0.8); border:1px solid rgba(26,58,92,0.1);
+  border-radius:20px; padding:3px 14px;
+  font-family:'Assistant',sans-serif;
+  backdrop-filter:blur(4px);
+}
 
 /* Result overlay */
 .result-overlay {
-  position:fixed; inset:0; z-index:50; background:rgba(0,0,0,0.75);
-  backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center;
-  padding:20px; animation:fadeIn 0.25s ease;
+  position:fixed; inset:0; z-index:50;
+  background:rgba(15,30,60,0.6);
+  backdrop-filter:blur(12px);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:0; animation:fadeIn 0.25s ease;
 }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 .result-box {
-  background:var(--navy); border-radius:22px;
-  max-width:400px; width:100%; padding:24px 20px;
+  background:var(--white);
+  border-radius:28px 28px 0 0;
+  max-width:480px; width:100%;
+  padding:24px 20px 36px;
   text-align:center; position:relative; overflow:hidden;
-  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  max-height:85dvh; overflow-y:auto;
+  padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
 }
-@keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
-.result-box::before {
-  content:''; position:absolute; inset:0;
-  border-radius:22px; pointer-events:none;
-  border:2.5px solid var(--border-color, var(--cyan));
-  box-shadow:inset 0 0 20px rgba(0,188,212,0.1), 0 0 30px rgba(0,188,212,0.2);
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.result-box::before { display:none; }
+
+.result-emoji { font-size:48px; display:block; margin-bottom:6px; }
+.result-title { font-size:24px; font-weight:900; margin-bottom:4px; }
+.result-name  { font-size:19px; font-weight:700; color:var(--knesset); margin-bottom:12px; }
+.result-vote-row {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-bottom:16px; font-size:13px; color:var(--muted);
+  font-family:'Assistant',sans-serif;
 }
-.result-emoji { font-size:54px; display:block; margin-bottom:6px; }
-.result-title { font-size:26px; font-weight:900; margin-bottom:4px; }
-.result-name  { font-size:20px; font-weight:700; color:var(--cyan); margin-bottom:12px; }
-.result-vote-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:16px; font-size:13px; color:var(--muted); }
-.result-stats { display:flex; gap:16px; justify-content:center; margin-bottom:18px; }
-.rstat { text-align:center; }
-.rstat-val { font-size:22px; font-weight:900; font-family:monospace; }
-.rstat-lbl { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
+.result-stats { display:flex; gap:14px; justify-content:center; margin-bottom:18px; }
+.rstat { text-align:center; background:#f8fafc; border-radius:12px; padding:10px 14px; }
+.rstat-val { font-size:22px; font-weight:900; font-family:'Rubik',sans-serif; }
+.rstat-lbl { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; font-family:'Assistant',sans-serif; }
 
 /* Full results */
-.full-results { max-height:160px; overflow-y:auto; margin-bottom:16px; display:flex; flex-direction:column; gap:4px; padding-right:4px; }
+.full-results {
+  max-height:160px; overflow-y:auto; margin-bottom:16px;
+  display:flex; flex-direction:column; gap:4px; padding-right:4px;
+}
 .full-results::-webkit-scrollbar { width:4px; }
-.full-results::-webkit-scrollbar-track { background:rgba(255,255,255,0.05); border-radius:2px; }
-.full-results::-webkit-scrollbar-thumb { background:rgba(0,188,212,0.4); border-radius:2px; }
-.fr-row { display:flex; align-items:center; justify-content:space-between; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.04); font-size:12px; }
-.fr-row.for     { border-right:3px solid #4ade80; }
-.fr-row.against { border-right:3px solid var(--pink); }
+.full-results::-webkit-scrollbar-track { background:rgba(26,58,92,0.05); border-radius:2px; }
+.full-results::-webkit-scrollbar-thumb { background:rgba(26,58,92,0.2); border-radius:2px; }
+.fr-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:6px 10px; border-radius:8px;
+  background:#f8fafc; font-size:12px;
+}
+.fr-row.for     { border-right:3px solid var(--green); }
+.fr-row.against { border-right:3px solid var(--accent); }
 .fr-row.abstain { border-right:3px solid var(--gold); }
-.fr-name { font-weight:700; }
-.fr-faction { color:var(--muted); font-size:11px; }
+.fr-name { font-weight:700; color:var(--text); }
+.fr-faction { color:var(--muted); font-size:11px; font-family:'Assistant',sans-serif; }
 .fr-vote { font-size:11px; font-weight:700; }
-.fr-vote.for     { color:#4ade80; }
-.fr-vote.against { color:var(--pink); }
-.fr-vote.abstain { color:var(--gold); }
+.fr-vote.for     { color:#15803d; }
+.fr-vote.against { color:#b91c1c; }
+.fr-vote.abstain { color:#92400e; }
 
 .result-actions { display:flex; gap:10px; }
-.btn-next { flex:1; padding:13px; border-radius:12px; border:none; background:var(--cyan); color:var(--navy); font-size:15px; font-weight:900; cursor:pointer; font-family:inherit; box-shadow:0 5px 0 #008ba3; transition:all 0.1s; position:relative; top:0; }
+.btn-next {
+  flex:1; padding:13px; border-radius:12px; border:none;
+  background:var(--knesset); color:var(--white);
+  font-size:15px; font-weight:900; cursor:pointer; font-family:'Rubik',sans-serif;
+  box-shadow:0 5px 0 #0d2240;
+  transition:all 0.1s; position:relative; top:0;
+}
 .btn-next:active { top:5px; box-shadow:0 0 0 transparent; }
-.btn-home { padding:13px 18px; border-radius:12px; border:1.5px solid rgba(255,255,255,0.2); background:transparent; color:var(--muted); font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+.btn-home {
+  padding:13px 18px; border-radius:12px;
+  border:2px solid #e2e8f0; background:transparent;
+  color:var(--muted); font-size:14px; font-weight:700;
+  cursor:pointer; font-family:'Rubik',sans-serif;
+  transition:all 0.2s;
+}
+.btn-home:hover { border-color:var(--knesset); color:var(--knesset); }
+
+/* Sheet handle */
+.sheet-handle {
+  width:40px; height:4px; background:#e2e8f0; border-radius:4px;
+  margin:0 auto 18px;
+}
 
 /* Flash */
 .flash { position:fixed; inset:0; pointer-events:none; z-index:40; opacity:0; transition:opacity 0.15s; }
-.flash.green { background:rgba(22,163,74,0.15); }
-.flash.red   { background:rgba(240,67,106,0.15); }
+.flash.green { background:rgba(45,198,83,0.12); }
+.flash.red   { background:rgba(230,57,70,0.12); }
 
 /* Modal instructions */
-.modal-overlay { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s; }
-.modal-box { background:var(--navy); border:2.5px solid var(--cyan); border-radius:20px; padding:24px; max-width:400px; width:100%; box-shadow:0 0 30px rgba(0,188,212,0.3); animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-.modal-title { color:var(--lime); font-size:19px; font-weight:900; margin-bottom:16px; text-align:center; }
-.modal-steps { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
-.modal-step { display:flex; gap:12px; align-items:flex-start; background:rgba(255,255,255,0.05); border-radius:10px; padding:9px 12px; }
+.modal-overlay {
+  position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.45); backdrop-filter:blur(8px);
+  display:flex; align-items:flex-end; justify-content:center;
+  animation:fadeIn 0.2s;
+}
+.modal-box {
+  background:var(--white); border:none;
+  border-radius:24px 24px 0 0; padding:20px 22px 36px;
+  max-width:480px; width:100%;
+  animation:slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  max-height:85dvh; overflow-y:auto;
+  padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+}
+.modal-title { color:var(--knesset); font-size:19px; font-weight:900; margin-bottom:16px; text-align:center; }
+.modal-steps { display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+.modal-step {
+  display:flex; gap:12px; align-items:flex-start;
+  background:#f8fafc; border:1px solid #e2e8f0;
+  border-radius:12px; padding:9px 12px;
+}
 .modal-step-icon { font-size:20px; flex-shrink:0; }
-.modal-step-text { font-size:13px; line-height:1.6; color:rgba(255,255,255,0.85); }
-.modal-step-text strong { color:var(--cyan); }
+.modal-step-text {
+  font-size:13px; line-height:1.6; color:var(--muted);
+  font-family:'Assistant',sans-serif;
+}
+.modal-step-text strong { color:var(--knesset); }
+
+/* guess counter */
+#guess-counter {
+  font-size:11px; color:var(--muted); font-weight:600;
+  font-family:'Assistant',sans-serif;
+}
+
+@media (max-height: 700px) {
+  .vote-scene { height:90px; }
+  .play-wrap  { gap:5px; }
+}
 </style>
 </head>
 <body>
@@ -362,15 +530,15 @@ body::before {
     <div class="load-bars"><span></span><span></span><span></span></div>
     <div class="load-title">מי אני?</div>
     <div class="spinner"></div>
-    <div id="load-msg" style="color:var(--muted);font-size:14px">טוען נתונים...</div>
+    <div id="load-msg">טוען נתונים...</div>
   </div>
 </div>
 
 <!-- ERROR -->
 <div id="screen-error" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px;padding:24px;text-align:center;">
-    <div style="font-size:52px;filter:drop-shadow(0 0 10px rgba(240,67,106,0.8))">⚠️</div>
-    <div style="color:var(--pink);font-size:22px;font-weight:900">שגיאה בטעינה</div>
+    <div style="font-size:52px">⚠️</div>
+    <div style="color:var(--accent);font-size:22px;font-weight:900">שגיאה בטעינה</div>
     <div id="error-msg" class="error-box"></div>
     <button class="btn-start" style="width:200px" onclick="loadGames(true)">🔄 נסה שוב</button>
   </div>
@@ -378,41 +546,47 @@ body::before {
 
 <!-- HOME -->
 <div id="screen-home" class="screen">
-  <div style="display:flex;align-items:center;justify-content:center;flex:1;padding:20px;">
+  <div style="display:flex;flex-direction:column;flex:1;">
     <div class="home-inner">
-      <div class="game-logo">
-        <span class="game-logo-emoji">🏛️</span>
-        <h1><span class="cyan">מי אני</span> <span class="lime"כ?</span></h1>
-        <div class="tagline">נחש את הח"כ לפי הצבעתו בכנסת</div>
-      </div>
-      <div class="accent-bar"><span></span><span></span><span></span></div>
 
-      <div class="diff-section">
-        <div class="diff-label">בחר רמת קושי</div>
-        <div class="diff-row">
-          <button class="diff-btn easy" id="diff-easy" onclick="setDiff('easy')">
-            <span class="diff-icon">😊</span>
-            <span>קל</span>
-            <span class="diff-lives">10 ניחושים</span>
-          </button>
-          <button class="diff-btn medium active" id="diff-medium" onclick="setDiff('medium')">
-            <span class="diff-icon">🤔</span>
-            <span>בינוני</span>
-            <span class="diff-lives">8 ניחושים</span>
-          </button>
-          <button class="diff-btn hard" id="diff-hard" onclick="setDiff('hard')">
-            <span class="diff-icon">🔥</span>
-            <span>קשה</span>
-            <span class="diff-lives">5 ניחושים</span>
-          </button>
+      <div class="home-sky">
+        <div class="game-logo">
+          <span class="game-logo-emoji">🏛️</span>
+          <h1><span class="cyan">מי אני</span> <span class="lime">?</span></h1>
+          <div class="tagline">נחש את הח"כ לפי הצבעתו בכנסת</div>
         </div>
+        <div class="accent-bar"><span></span><span></span><span></span></div>
       </div>
 
-      <div class="home-actions">
-        <button class="btn-start" onclick="startGame()">▶ שחק עכשיו</button>
-        <button class="btn-howto" onclick="openModal()">❓ איך משחקים?</button>
+      <div class="home-card-sheet">
+        <div class="diff-section">
+          <div class="diff-label">בחר רמת קושי</div>
+          <div class="diff-row">
+            <button class="diff-btn easy" id="diff-easy" onclick="setDiff('easy')">
+              <span class="diff-icon">😊</span>
+              <span>קל</span>
+              <span class="diff-lives">10 ניחושים</span>
+            </button>
+            <button class="diff-btn medium active" id="diff-medium" onclick="setDiff('medium')">
+              <span class="diff-icon">🤔</span>
+              <span>בינוני</span>
+              <span class="diff-lives">8 ניחושים</span>
+            </button>
+            <button class="diff-btn hard" id="diff-hard" onclick="setDiff('hard')">
+              <span class="diff-icon">🔥</span>
+              <span>קשה</span>
+              <span class="diff-lives">5 ניחושים</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="home-actions">
+          <button class="btn-start" onclick="startGame()">▶ שחק עכשיו</button>
+          <button class="btn-howto" onclick="openModal()">❓ איך משחקים?</button>
+        </div>
+        <div class="credit">פיתוח: גיל פלדמן</div>
       </div>
-      <div class="credit">פיתוח: גיל פלדמן</div>
+
     </div>
   </div>
 </div>
@@ -443,25 +617,15 @@ body::before {
         <div class="vm-mk mk-walking" id="vm-mk">
           <svg viewBox="0 0 32 70" xmlns="http://www.w3.org/2000/svg" width="32" height="70">
             <g class="mk-body-grp">
-              <!-- Head -->
               <circle cx="16" cy="9" r="7" fill="#f5d0a9" stroke="#c9a880" stroke-width="1"/>
-              <!-- Hair -->
               <ellipse cx="16" cy="4" rx="6" ry="3" fill="#4a3728"/>
-              <!-- Suit jacket -->
-              <rect class="mk-torso" x="8" y="16" width="16" height="22" rx="3" fill="#1e2d7d"/>
-              <!-- White shirt -->
+              <rect class="mk-torso" x="8" y="16" width="16" height="22" rx="3" fill="#1a3a5c"/>
               <rect x="13" y="16" width="6" height="18" fill="#e8eaf6"/>
-              <!-- Tie -->
-              <polygon points="16,17 14.5,24 16,26 17.5,24" fill="#f0436a"/>
-              <!-- Left arm -->
-              <rect class="mk-arm-l" x="4" y="17" width="5" height="16" rx="2.5" fill="#1e2d7d"/>
-              <!-- Right arm -->
-              <rect class="mk-arm-r" x="23" y="17" width="5" height="16" rx="2.5" fill="#1e2d7d"/>
-              <!-- Left leg -->
+              <polygon points="16,17 14.5,24 16,26 17.5,24" fill="#e63946"/>
+              <rect class="mk-arm-l" x="4" y="17" width="5" height="16" rx="2.5" fill="#1a3a5c"/>
+              <rect class="mk-arm-r" x="23" y="17" width="5" height="16" rx="2.5" fill="#1a3a5c"/>
               <rect class="mk-leg-l" x="9"  y="37" width="6" height="22" rx="3" fill="#111827"/>
-              <!-- Right leg -->
               <rect class="mk-leg-r" x="17" y="37" width="6" height="22" rx="3" fill="#111827"/>
-              <!-- Shoes -->
               <ellipse cx="12" cy="59" rx="5" ry="3" fill="#0a0a0a"/>
               <ellipse cx="20" cy="59" rx="5" ry="3" fill="#0a0a0a"/>
             </g>
@@ -488,7 +652,7 @@ body::before {
         <span class="lives-label">חיים:</span>
         <div class="lives-wrap" id="lives-wrap"></div>
       </div>
-      <div style="font-size:11px;color:var(--muted);font-weight:600;" id="guess-counter">0/0 ניחושים שגויים</div>
+      <div id="guess-counter">0/0 ניחושים שגויים</div>
     </div>
 
     <div class="hint-row">
@@ -510,6 +674,7 @@ body::before {
 <!-- Modal instructions -->
 <div id="modal" class="modal-overlay" style="display:none" onclick="closeModalOutside(event)">
   <div class="modal-box">
+    <div class="sheet-handle"></div>
     <div class="modal-title">🏛️ מי אני? — איך משחקים?</div>
     <div class="modal-steps">
       <div class="modal-step">
@@ -518,7 +683,7 @@ body::before {
       </div>
       <div class="modal-step">
         <div class="modal-step-icon">🔠</div>
-        <div class="modal-step-text">לחצו על <strong>אותיות </strong> כדי לנחש את שמו של חבר/ת הכנסת שהצביע/ה כך</div>
+        <div class="modal-step-text">לחצו על <strong>אותיות</strong> כדי לנחש את שמו של חבר/ת הכנסת שהצביע/ה כך</div>
       </div>
       <div class="modal-step">
         <div class="modal-step-icon">🏛️</div>
@@ -552,18 +717,13 @@ const DETAIL_PATH = "/WebSiteApi/knessetapi/Votes/GetVoteDetails/";
 const CACHE_KEY   = "mi-ani-hachak-cache-v1";
 
 const DIFF_LIVES = { easy: 10, medium: 8, hard: 5 };
-// Man parts shown in order per wrong guess
-// vote scene constants
-const MK_POSITIONS = [10, 20, 30, 42, 54, 66, 76, 86]; // left% per wrong guess
+const MK_POSITIONS = [10, 20, 30, 42, 54, 66, 76, 86];
 
-// Hebrew keyboard layout
-// Real Hebrew keyboard layout (no final letters)
 const KB_ROWS = [
   ["א","ב","ג","ד","ה","ו","ז","ח","ט"],
   ["י","כ","ל","מ","נ","ס","ע","פ","צ"],
   ["ק","ר","ש","ת"],
 ];
-  // No final letters — treat finals in name as their base form
 const FINAL_TO_REG = {"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
 
 function showScreen(id) {
@@ -621,7 +781,7 @@ async function fetchVoteDetails(voteId) {
 function buildGame(row, data) {
   const header  = data.VoteHeader?.[0] || {};
   const details = data.VoteDetails   || [];
-  const dir     = (row.voteDir || "").trim(); // "בעד" or "נגד"
+  const dir     = (row.voteDir || "").trim();
   const targetVote = dir === "בעד" ? "for" : dir === "נגד" ? "against" : null;
   if (!targetVote) return null;
 
@@ -675,7 +835,6 @@ async function loadGames(bustCache = false) {
 
     showScreen("home");
 
-    // Load rest in background
     rows.slice(6).forEach(async row => {
       if (cache[row.voteId]) {
         if (!allGames.find(g => g.voteId === row.voteId)) allGames.push(cache[row.voteId]);
@@ -727,7 +886,6 @@ function startGame() {
     won: false,
   };
 
-  // UI setup
   document.getElementById("header-title").textContent = game.shortName || game.title;
 
   const badge = document.getElementById("vote-badge");
@@ -756,13 +914,10 @@ function goHome() {
   showScreen("home");
 }
 
-// Normalize for matching: treat final letters as their base
 function normLetter(l) { const finals = {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}; return finals[l] || l; }
 
-// Get display letters of name (split by space for separate words)
 function isHebrewLetter(ch) {
   const cp = ch.charCodeAt(0);
-  // Hebrew letters: 0x05D0-0x05EA (alef to tav, including finals)
   return cp >= 0x05D0 && cp <= 0x05EA;
 }
 
@@ -779,12 +934,10 @@ function buildNameDisplay() {
   wrap.innerHTML = "";
   const letters = nameLetters();
 
-  // Split into words (by spaces), render each word as a no-break group
   let wordGroup = null;
 
   letters.forEach((item, i) => {
     if (item.isSpace) {
-      // Close current word group, add spacer
       wordGroup = null;
       const spacer = document.createElement("div");
       spacer.style.cssText = "width:12px;flex-shrink:0;";
@@ -792,7 +945,6 @@ function buildNameDisplay() {
       return;
     }
 
-    // Start a new word group if needed
     if (!wordGroup) {
       wordGroup = document.createElement("div");
       wordGroup.style.cssText = "display:inline-flex;flex-wrap:nowrap;gap:5px;align-items:flex-end;";
@@ -823,6 +975,7 @@ function buildNameDisplay() {
     wordGroup.appendChild(slot);
   });
 }
+
 function revealLetters(letter) {
   const norm = normLetter(letter);
   const letters = nameLetters();
@@ -903,15 +1056,12 @@ function updateGallows() {
   const mk     = document.getElementById("vm-mk");
   const fill   = document.getElementById("vm-fill");
   const slip   = document.getElementById("vm-ballot-fly");
-  // Stage is 260px wide; box right edge at ~198px; mk width 32px => stop at ~162px
   const leftPx = Math.round(4 + ratio * 158);
   if (mk) {
     mk.style.left = leftPx + "px";
-    // Stop walking animation when very close to box
     mk.className = (ratio >= 0.95) ? "vm-mk mk-idle" : "vm-mk mk-walking";
   }
   if (fill) fill.style.height = Math.round(ratio * 90) + "%";
-  // Ballot slip flies from MK toward box on each wrong guess
   if (slip && gs.wrongGuesses > 0) {
     slip.style.left   = (leftPx + 20) + "px";
     slip.style.bottom = "48px";
@@ -949,7 +1099,6 @@ function guess(letter) {
   gs.guessSequence.push(letter);
   const btn = document.getElementById("kb-" + letter);
 
-  // Check if the name contains this letter
   const nameNorms = nameLetters().filter(l => !l.isSpace && !l.isNonHebrew).map(l => normLetter(l.ch));
   const hit = nameNorms.includes(norm);
 
@@ -987,7 +1136,6 @@ function showResult() {
   const target   = gs.target;
   const voteLabels = { for:"בעד", against:"נגד", abstain:"נמנע" };
 
-  // ── שמירת תוצאה לגוגל שיט ──
   const duration = Math.round((Date.now() - gs.startTime) / 1000);
   fetch(POST_URL, {
     method: "POST",
@@ -1009,13 +1157,12 @@ function showResult() {
     }),
   }).catch(() => {});
 
-  // Build full results list (sorted: for > against > abstain)
   const order  = { for:0, against:1, abstain:2 };
   const sorted = [...game.allMembers].sort((a,b) => order[a.vote] - order[b.vote]);
 
   const frHTML = sorted.map(m => {
     const isTarget = m.name === target.name;
-    return `<div class="fr-row ${m.vote}" style="${isTarget ? 'background:rgba(0,188,212,0.12);' : ''}">
+    return `<div class="fr-row ${m.vote}" style="${isTarget ? 'background:rgba(37,99,235,0.07);' : ''}">
       <div><div class="fr-name">${esc(m.name)}${isTarget ? " 🎯" : ""}</div><div class="fr-faction">${esc(m.faction)}</div></div>
       <span class="fr-vote ${m.vote}">${voteLabels[m.vote]}</span>
     </div>`;
@@ -1024,25 +1171,27 @@ function showResult() {
   const forCount     = game.allMembers.filter(m => m.vote === "for").length;
   const againstCount = game.allMembers.filter(m => m.vote === "against").length;
 
+  const titleColor = won ? "var(--green)" : "var(--accent)";
+
   const overlay = document.createElement("div");
   overlay.className = "result-overlay";
   overlay.id = "result-overlay";
-  overlay.style.setProperty("--border-color", won ? "var(--lime)" : "var(--pink)");
   overlay.innerHTML = `
-    <div class="result-box" style="--border-color:${won ? "var(--lime)" : "var(--pink)"}">
+    <div class="result-box">
+      <div class="sheet-handle"></div>
       <span class="result-emoji">${won ? "🎉" : "💀"}</span>
-      <div class="result-title" style="color:${won ? "var(--lime)" : "var(--pink)"}">${won ? "כל הכבוד!" : "נפסלת!"}</div>
+      <div class="result-title" style="color:${titleColor}">${won ? "כל הכבוד!" : "נפסלת!"}</div>
       <div class="result-name">${esc(target.name)}</div>
       <div class="result-vote-row">
         <span class="vote-badge ${target.vote}">${voteLabels[target.vote]}</span>
         <span>${esc(game.shortName || game.title)}</span>
       </div>
       <div class="result-stats">
-        <div class="rstat"><div class="rstat-val" style="color:#4ade80">${forCount}</div><div class="rstat-lbl">בעד</div></div>
-        <div class="rstat"><div class="rstat-val" style="color:var(--pink)">${againstCount}</div><div class="rstat-lbl">נגד</div></div>
-        <div class="rstat"><div class="rstat-val" style="color:var(--gold)">${game.allMembers.length - forCount - againstCount}</div><div class="rstat-lbl">נמנע</div></div>
+        <div class="rstat"><div class="rstat-val" style="color:#15803d">${forCount}</div><div class="rstat-lbl">בעד</div></div>
+        <div class="rstat"><div class="rstat-val" style="color:#b91c1c">${againstCount}</div><div class="rstat-lbl">נגד</div></div>
+        <div class="rstat"><div class="rstat-val" style="color:#92400e">${game.allMembers.length - forCount - againstCount}</div><div class="rstat-lbl">נמנע</div></div>
       </div>
-      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;text-align:right;width:100%;padding:0 4px">תוצאות מלאות:</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;text-align:right;width:100%;padding:0 4px;font-family:'Assistant',sans-serif">תוצאות מלאות:</div>
       <div class="full-results">${frHTML}</div>
       <div class="result-actions">
         <button class="btn-next" onclick="nextRound()">▶ סיבוב נוסף</button>
